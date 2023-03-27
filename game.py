@@ -3,6 +3,7 @@
 import pygame
 
 def main():
+    pygame.init()
     screen = pygame.display.set_mode((800, 600)) # näytön koko
     clock = pygame.time.Clock()
 
@@ -18,7 +19,10 @@ def main():
         pygame.display.flip()
 
         clock.tick(60) # Odota niin kauan, että ruudun päivitysnopeus on 60fps
+    
+    pygame.quit()
 
 if __name__ == '__main__':
     main()
+
     
