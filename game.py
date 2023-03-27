@@ -37,6 +37,7 @@ class Game:
 
         pygame.quit()
 
+
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -58,6 +59,21 @@ class Game:
             # Painovoima (lisää putoamisnopeutta joka kuvassa)
             self.bird_y_speed += 0.2
 
+        # Estetään lintua menemästä yli pelialueen yläreunan
+        if bird_y < 0:
+            bird_y = 0
+            self.bird_y_speed = 0
+            
+        
+        # Jos lintu osuu pelialueen alareunaan, tulee varoitusteksi "Game Over" ja peli päättyy
+        if bird_y > 600 - 64:
+            self.running = False
+            self.screen.fill((0, 0, 0))
+            font = pygame.font.SysFont("Arial", 72)
+            text = font.render("Game Over", True, (255, 255, 255))
+            self.screen.blit(text, (200, 200))
+            pygame.display.flip()
+            pygame.time.wait(3000)
 
         # Liikuta lintua sen nopeuden verran
         bird_y += self.bird_y_speed
@@ -70,7 +86,10 @@ class Game:
         self.screen.fill((230, 230, 255))
 
         # Piirrä lintu
-        self.screen.blit(self.img_bird1, self.bird_pos)
+        angle = -90 * 0.08 * self.bird_y_speed
+        bird_img = pygame.transform.rotozoom(self.img_bird1, angle, 1)
+        self.screen.blit(bird_img, self.bird_pos)
+
 
         pygame.display.flip()
 
