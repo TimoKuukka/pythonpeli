@@ -77,9 +77,8 @@ class Game:
 
         # Liikuta lintua sen nopeuden verran
         bird_y += self.bird_y_speed
-
-
         self.bird_pos = (self.bird_pos[0], bird_y)
+
 
     def update_screen(self):
         # Täytä tausta vaaleansinisellä
@@ -87,6 +86,8 @@ class Game:
 
         # Piirrä lintu
         angle = -90 * 0.08 * self.bird_y_speed
+        angle = max(min(angle,60), -60)
+        
         bird_img = pygame.transform.rotozoom(self.img_bird1, angle, 1)
         self.screen.blit(bird_img, self.bird_pos)
 
