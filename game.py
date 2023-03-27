@@ -111,11 +111,8 @@ class Game:
 
         # piirrä taustakuvat
         self.screen.blit(self.bg_imgs[0], (self.bg0_pos, 0))
-        self.screen.blit(self.bg_imgs[0], (self.bg0_pos + 800, 0))
         self.screen.blit(self.bg_imgs[1], (self.bg1_pos, 0))
-        self.screen.blit(self.bg_imgs[1], (self.bg1_pos + 800, 0))
         self.screen.blit(self.bg_imgs[2], (self.bg2_pos, 0))
-        self.screen.blit(self.bg_imgs[2], (self.bg2_pos + 800, 0))
         
 
         # Piirrä lintu
