@@ -1,2 +1,2 @@
 # pythonpeli
-2021 julkaistun rakettipelin ominaisuuksien kehittäminen
+flappy bird idealla toteutettu python peli
