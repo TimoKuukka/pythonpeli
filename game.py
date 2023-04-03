@@ -1,21 +1,24 @@
 import pygame
 
+DEFAULT_SCREEN_SIZE = (800, 450)
+FPS_TEXT_COLOR = (128, 0, 128)  # dark blue
 
 def main():
     game = Game()
     game.run()
 
 
-DEFAULT_SCREEN_SIZE = (800, 450)
-
 class Game:
     def __init__(self):
         pygame.init()
+        self.clock = pygame.time.Clock()
         self.is_fullscreen = False
+        self.show_fps = True
         self.screen = pygame.display.set_mode(DEFAULT_SCREEN_SIZE)
         self.screen_w = self.screen.get_width()
         self.screen_h = self.screen.get_height()
         self.running = False
+        self.font16 = pygame.font.Font("font/SyneMono-Regular.ttf", 16)
         self.init_graphics()
         self.init_objects()
 
@@ -64,8 +67,6 @@ class Game:
         self.bg_pos[2] = self.bg_pos[2] * scale_x
 
     def run(self):
-        clock = pygame.time.Clock()
-
         self.running = True
 
         while self.running:
@@ -73,7 +74,7 @@ class Game:
             self.handle_game_logic()
             self.update_screen()
             # Odota niin kauan, että ruudun päivitysnopeus on 60fps
-            clock.tick(60)
+            self.clock.tick(60)
 
         pygame.quit()
 
@@ -131,6 +132,11 @@ class Game:
         # Liikuta lintua sen nopeuden verran
         bird_y += self.bird_y_speed
 
+        # Estetään lintua menemästä yli pelialueen yläreunan
+        if bird_y < 0:
+            bird_y = 0
+            self.bird_y_speed = 0
+
         if self.bird_alive:  # Jos lintu on elossa
             # Laske linnun asento
             self.bird_angle = -90 * 0.04 * self.bird_y_speed
@@ -143,7 +149,7 @@ class Game:
             self.bird_alive = False
 
         # Aseta linnun x-y-koordinaatit self.bird_pos-muuttujaan
-        self.bird_pos = (self.bird_pos[0], bird_y)
+        self.bird_pos = (self.bird_pos[0], bird_y)   
 
     def update_screen(self):
         # Täytä tausta vaaleansinisellä
@@ -172,6 +178,13 @@ class Game:
             bird_img_i = self.bird_dead_imgs[(self.bird_frame // 10) % 2]
         bird_img = pygame.transform.rotozoom(bird_img_i, self.bird_angle, 1)
         self.screen.blit(bird_img, self.bird_pos)
+
+        # Piirrä FPS luku
+        if self.show_fps:
+            fps_text = f"{self.clock.get_fps():.1f} fps"
+            fps_img = self.font16.render(fps_text, True, FPS_TEXT_COLOR)
+            self.screen.blit(fps_img, (0, 0))
+        
 
         pygame.display.flip()
 
