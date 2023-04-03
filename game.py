@@ -21,26 +21,29 @@ class Game:
             for i in [1, 2, 3, 4]
         ]
         self.bird_imgs = [
-            pygame.transform.rotozoom(x, 0, 1/16)
+            # convert.alpha piirtää kuvan nopeammin ruudulle
+            pygame.transform.rotozoom(x, 0, 1/16).convert_alpha()
             for x in bird_imgs
         ]
         bg_imgs = [
+            # Kuvat lisätään
             pygame.image.load(f"images/background/layer_{i}.png")
             for i in [1, 2, 3]
         ]
         self.bg_imgs = [
-            pygame.transform.rotozoom(x, 0, 600 / x.get_height()).convert_alpha()
+            # Kuvat käsitellään vastaamaan ruudun kokoa
+            pygame.transform.rotozoom(
+                x, 0, 600 / x.get_height()).convert_alpha()
             for x in bg_imgs
         ]
 
+        self.bg_widths = [x.get_width() for x in self.bg_imgs]
 
     def init_objects(self):
         self.bird_y_speed = 0
         self.bird_pos = (200, 000)
         self.bird_lift = False
-        self.bg0_pos = 0
-        self.bg1_pos = 0
-        self.bg2_pos = 0
+        self.bg_pos = [0, 0, 0]
 
     def run(self):
         clock = pygame.time.Clock()
@@ -56,7 +59,6 @@ class Game:
 
         pygame.quit()
 
-
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -69,10 +71,10 @@ class Game:
                     self.bird_lift = False
 
     def handle_game_logic(self):
-        self.bg0_pos -= 0.25
-        self.bg1_pos -= 0.5
-        self.bg2_pos -= 2
-        
+        self.bg_pos[0] -= 0.5
+        self.bg_pos[1] -= 1
+        self.bg_pos[2] -= 3
+
         bird_y = self.bird_pos[1]
 
         if self.bird_lift:
@@ -87,8 +89,7 @@ class Game:
         if bird_y < 0:
             bird_y = 0
             self.bird_y_speed = 0
-            
-        
+
         # Jos lintu osuu pelialueen alareunaan, tulee varoitusteksi "Game Over" ja peli päättyy
         if bird_y > 600 - 64:
             self.running = False
@@ -104,18 +105,27 @@ class Game:
 
         self.bird_pos = (self.bird_pos[0], bird_y)
 
-
     def update_screen(self):
         # Täytä tausta vaaleansinisellä
-        self.screen.fill((230, 230, 255))
+        # self.screen.fill((230, 230, 255))
 
-        # piirrä taustakuvat
-        self.screen.blit(self.bg_imgs[0], (self.bg0_pos, 0))
-        self.screen.blit(self.bg_imgs[1], (self.bg1_pos, 0))
-        self.screen.blit(self.bg_imgs[2], (self.bg2_pos, 0))
-        
+        # Piirrä taustakerrokset (3 kpl)
+        for i in [0, 1, 2]:
+            # Ensin piirrä vasen tausta
+            self.screen.blit(self.bg_imgs[i], (self.bg_pos[i], 0))
+            # Jos vasen tausta ei riitä peittämään koko ruutua, niin...
+            if self.bg_pos[i] + self.bg_widths[i] < 800:
+                # ...piirrä sama tausta vielä oikealle puolelle
+                self.screen.blit(
+                    self.bg_imgs[i],
+                    (self.bg_pos[i] + self.bg_widths[i], 0)
+                )
+            # Jos taustaa on jo siirretty sen leveyden verran...
+            if self.bg_pos[i] < -self.bg_widths[i]:
+                # ...niin aloita alusta
+                self.bg_pos[i] += self.bg_widths[i]
 
-        # Piirrä lintu
+    # Piirrä lintu
         angle = -90 * 0.04 * self.bird_y_speed
         angle = max(min(angle, 60), -60)
 
@@ -125,7 +135,6 @@ class Game:
         self.screen.blit(bird_img, self.bird_pos)
 
         pygame.display.flip()
-
 
 
 if __name__ == "__main__":
