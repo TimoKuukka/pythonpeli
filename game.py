@@ -9,6 +9,49 @@ def main():
     game = Game()
     game.run()
 
+# # Create a main menu with 3 buttons 'play', 'options' and 'quit'
+# class MainMenu:
+#     def __init__(self, screen):
+#         self.screen = screen
+#         self.screen_w = screen.get_width()
+#         self.screen_h = screen.get_height()
+#         self.font = pygame.font.Font("font/SyneMono-Regular.ttf", 32)
+#         self.buttons = [
+#             Button(self.screen, "Play", self.screen_w / 2, self.screen_h / 2 - 50),
+#             Button(self.screen, "Options", self.screen_w / 2, self.screen_h / 2),
+#             Button(self.screen, "Quit", self.screen_w / 2, self.screen_h / 2 + 50),
+#         ]
+
+#     def handle_events(self, events):
+#         for event in events:
+#             if event.type == pygame.MOUSEBUTTONDOWN:
+#                 for button in self.buttons:
+#                     if button.is_clicked(event.pos):
+#                         return button.text
+
+#     def draw(self):
+#         self.screen.fill((0, 0, 0))
+#         for button in self.buttons:
+#             button.draw()
+
+# # Create a button with text and position
+# class Button:
+#     def __init__(self, screen, text, x, y):
+#         self.screen = screen
+#         self.text = text
+#         self.x = x
+#         self.y = y
+#         self.font = pygame.font.Font("font/SyneMono-Regular.ttf", 32)
+#         self.text_surface = self.font.render(text, True, TEXT_COLOR)
+#         self.text_rect = self.text_surface.get_rect(center=(x, y))
+
+#     def draw(self):
+#         self.screen.blit(self.text_surface, self.text_rect)
+
+#     def is_clicked(self, pos):
+#         return self.text_rect.collidepoint(pos)
+    
+
 
 class Game:
     def __init__(self):
@@ -233,6 +276,7 @@ class Obstacle:
         ly = screen.get_height() - self.lower_height
         lh = self.lower_height
         pygame.draw.rect(screen, self.color, (x, ly, self.width, lh))
+
 
 
 if __name__ == "__main__":
