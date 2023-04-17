@@ -4,7 +4,10 @@ import pygame
 
 DEFAULT_SCREEN_SIZE = (800, 450)
 FPS_TEXT_COLOR = (128, 0, 128)  # dark purple
+SCORE_TEXT_COLOR = (0, 64, 160)
 TEXT_COLOR = (128, 0, 0)  # dark red
+
+DEBUG = 0
 
 def main():
     game = Game()
@@ -58,6 +61,7 @@ class Game:
         self.bg_pos = [0, 0, 0]
 
     def init_objects(self):
+        self.score = 0
         self.bird_alive = True
         self.bird_y_speed = 0
         self.bird_pos = (self.screen_w / 3, self.screen_h / 4)
@@ -169,21 +173,27 @@ class Game:
             self.add_obstacle()
 
         # Poista vasemmanpuoleisin este, jos se on mennyt ruudun ulkopuolelle
-        if not self.obstacles[0].is_visible:
+        if not self.obstacles[0].is_visible():
             self.remove_oldest_obstacle()
+            self.score += 1
         
         # Siirrä esteitä sopivalla nopeudella ja tarkista törmäys
+        self.bird_collides_with_obstacle = False
         for obstacle in self.obstacles:
-            position = obstacle.move(self.screen_w * 0.005)
+            if self.bird_alive:
+                obstacle.move(self.screen_w * 0.005)
             if obstacle.collides_with_circle(self.bird_pos, self.bird_radius):
-                self.bird_alive = False
+                self.bird_collides_with_obstacle = True
+        
+        if self.bird_collides_with_obstacle:
+            self.bird_alive = False
 
     def update_screen(self):
         # Täytä tausta vaaleansinisellä
         #self.screen.fill((230, 230, 255))
 
         # Piirrä taustakerrokset (3 kpl)
-        for i in [0, 1, 2]:
+        for i in range(len(self.bg_imgs)):
             # Ensin piirrä vasen tausta
             self.screen.blit(self.bg_imgs[i], (self.bg_pos[i], 0))
             # Jos vasen tausta ei riitä peittämään koko ruutua, niin...
@@ -207,13 +217,28 @@ class Game:
         else:
             bird_img_i = self.bird_dead_imgs[(self.bird_frame // 10) % 2]
         bird_img = pygame.transform.rotozoom(bird_img_i, self.bird_angle, 1)
-        self.screen.blit(bird_img, self.bird_pos)
+        bird_x = self.bird_pos[0] - bird_img.get_width() / 2 * 1.25
+        bird_y = self.bird_pos[1] - bird_img.get_height() / 2
+        self.screen.blit(bird_img, (bird_x, bird_y))
 
+        # Piirrä pisteet 
+        score_text = f"{self.score}"
+        score_img = self.font_big.render(score_text, True, SCORE_TEXT_COLOR)
+        score_pos = (self.screen_w * 0.95 - score_img.get_width(),
+                     self.screen_h - score_img.get_height())
+        self.screen.blit(score_img, score_pos)
+
+        # Piirrä GAME OVER -teksti
         if not self.bird_alive:
             game_over_img = self.font_big.render("GAME OVER", True, TEXT_COLOR)
             x = self.screen_w / 2 - game_over_img.get_width() / 2
             y = self.screen_h / 2 - game_over_img.get_height() / 2
             self.screen.blit(game_over_img, (x, y))
+
+        # Piirrä kehittämistä helpottava ympyrä
+        if DEBUG:
+            color = (0, 0, 0) if not self.bird_collides_with_obstacle else (255, 0, 0)
+            pygame.draw.circle(self.screen, color, self.bird_pos, self.bird_radius)
 
         # Piirrä FPS luku
         if self.show_fps:
@@ -243,7 +268,6 @@ class Obstacle:
     
     def move(self, speed):
         self.position -= speed
-        return self.position
 
     def is_visible(self):
         return self.position + self.width >= 0
@@ -254,11 +278,12 @@ class Obstacle:
         y2 = self.upper_height + self.hole_size
         p = self.position
         q = self.position + self.width
-
-        if x - radius > q or x + radius < q:
+        if x - radius > q or x + radius < p:
             return False
-        
-        return False # TODO: Laske törmäys
+        # Helpotetaan asiaa olettamalla ympyrä neliöksi
+        if y1 > y - radius or y2 < y + radius:
+            return True
+        return False
 
     
     def render(self, screen):
