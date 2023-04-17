@@ -168,11 +168,11 @@ class Game:
         # Aseta linnun x-y-koordinaatit self.bird_pos-muuttujaan
         self.bird_pos = (self.bird_pos[0], bird_y)
 
-        # Lisää uusi este, kun viimeisin esto on yli ruudun puolivälin
-        if self.obstacles[-1].position < -self.screen_w / 2:
+        # Lisää uusi este, kun viimeisin este on yli ruudun puolivälin
+        if self.obstacles[-1].position < self.screen_w / 2:
             self.add_obstacle()
 
-        # Poista vasemmanpuoleisin este, jos se on mennyt ruudun ulkopuolelle
+        # Poista vasemmanpuoleisin este, kun se on mennyt ruudun ulkopuolelle
         if not self.obstacles[0].is_visible():
             self.remove_oldest_obstacle()
             self.score += 1
