@@ -149,7 +149,7 @@ class Game:
         # Liikuta lintua sen nopeuden verran
         bird_y += self.bird_y_speed
 
-        # Estetään lintua menemästä yli pelialueen yläreunan
+        # Estetään lintua menemästä yli pelialueen yläreunan yli
         if bird_y < 0:
             bird_y = 0
             self.bird_y_speed = 0
@@ -160,8 +160,8 @@ class Game:
             self.bird_angle = max(min(self.bird_angle, 60), -60)
 
         # Tarkista onko lintu pudonnut maahan
-        if bird_y > self.screen_h * 0.78:
-            bird_y = self.screen_h * 0.78
+        if bird_y > self.screen_h * 0.82:
+            bird_y = self.screen_h * 0.82
             self.bird_y_speed = 0
             self.bird_alive = False
 
