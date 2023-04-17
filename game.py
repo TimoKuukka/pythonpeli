@@ -8,52 +8,7 @@ TEXT_COLOR = (128, 0, 0)  # dark red
 
 def main():
     game = Game()
-    game.run()
-
-
-# # Create a main menu with 3 buttons 'play', 'options' and 'quit'
-# class MainMenu:
-#     def __init__(self, screen):
-#         self.screen = screen
-#         self.screen_w = screen.get_width()
-#         self.screen_h = screen.get_height()
-#         self.font = pygame.font.Font("font/SyneMono-Regular.ttf", 32)
-#         self.buttons = [
-#             Button(self.screen, "Play", self.screen_w / 2, self.screen_h / 2 - 50),
-#             Button(self.screen, "Options", self.screen_w / 2, self.screen_h / 2),
-#             Button(self.screen, "Quit", self.screen_w / 2, self.screen_h / 2 + 50),
-#         ]
-
-#     def handle_events(self, events):
-#         for event in events:
-#             if event.type == pygame.MOUSEBUTTONDOWN:
-#                 for button in self.buttons:
-#                     if button.is_clicked(event.pos):
-#                         return button.text
-
-#     def draw(self):
-#         self.screen.fill((0, 0, 0))
-#         for button in self.buttons:
-#             button.draw()
-
-# # Create a button with text and position
-# class Button:
-#     def __init__(self, screen, text, x, y):
-#         self.screen = screen
-#         self.text = text
-#         self.x = x
-#         self.y = y
-#         self.font = pygame.font.Font("font/SyneMono-Regular.ttf", 32)
-#         self.text_surface = self.font.render(text, True, TEXT_COLOR)
-#         self.text_rect = self.text_surface.get_rect(center=(x, y))
-
-#     def draw(self):
-#         self.screen.blit(self.text_surface, self.text_rect)
-
-#     def is_clicked(self, pos):
-#         return self.text_rect.collidepoint(pos)
-   
-
+    game.run()   
 
 class Game:
     def __init__(self):
@@ -80,6 +35,7 @@ class Game:
             pygame.transform.rotozoom(x, 0, self.screen_h / 9600).convert_alpha()
             for x in original_bird_images
         ]
+        self.bird_radius = self.bird_imgs[0].get_height() / 2  # Likiarvo
         original_bird_dead_images = [
             pygame.image.load(f"images/chicken/got_hit/frame-{i}.png")
             for i in [1, 2]
@@ -216,8 +172,11 @@ class Game:
         if not self.obstacles[0].is_visible:
             self.remove_oldest_obstacle()
         
+        # Siirrä esteitä sopivalla nopeudella ja tarkista törmäys
         for obstacle in self.obstacles:
-            obstacle.move(self.screen_w * 0.005)            
+            position = obstacle.move(self.screen_w * 0.005)
+            if obstacle.collides_with_circle(self.bird_pos, self.bird_radius):
+                self.bird_alive = False
 
     def update_screen(self):
         # Täytä tausta vaaleansinisellä
@@ -266,10 +225,11 @@ class Game:
 
 
 class Obstacle:
-    def __init__(self, position, upper_height, lower_height, width=100):
+    def __init__(self, position, upper_height, lower_height, hole_size, width=100):
         self.position = position # vasemman reunan sijainti
         self.upper_height = upper_height
         self.lower_height = lower_height
+        self.hole_size = hole_size
         self.width = width
         self.color = (0, 128, 0) # dark green
 
@@ -279,13 +239,27 @@ class Obstacle:
                                    int(screen_h * 0.75))
         h2 = random.randint(int(screen_h * 0.15), int(screen_h * 0.75))
         h1 = screen_h - h2 - hole_size
-        return cls(upper_height=h1, lower_height=h2, position=screen_w)
+        return cls(upper_height=h1, lower_height=h2, hole_size=hole_size, position=screen_w)
     
     def move(self, speed):
         self.position -= speed
+        return self.position
 
     def is_visible(self):
         return self.position + self.width >= 0
+    
+    def collides_with_circle(self, center, radius):
+        (x, y) = center
+        y1 = self.upper_height
+        y2 = self.upper_height + self.hole_size
+        p = self.position
+        q = self.position + self.width
+
+        if x - radius > q or x + radius < q:
+            return False
+        
+        return False # TODO: Laske törmäys
+
     
     def render(self, screen):
         x = self.position
