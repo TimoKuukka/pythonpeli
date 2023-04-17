@@ -1,4 +1,5 @@
 import random
+
 import pygame
 
 DEFAULT_SCREEN_SIZE = (800, 450)
@@ -8,6 +9,7 @@ TEXT_COLOR = (128, 0, 0)  # dark red
 def main():
     game = Game()
     game.run()
+
 
 # # Create a main menu with 3 buttons 'play', 'options' and 'quit'
 # class MainMenu:
@@ -50,7 +52,7 @@ def main():
 
 #     def is_clicked(self, pos):
 #         return self.text_rect.collidepoint(pos)
-    
+   
 
 
 class Game:
@@ -106,13 +108,20 @@ class Game:
         self.bird_angle = 0
         self.bird_frame = 0
         self.bird_lift = False
-        self.obstacles = [Obstacle.make_random(self.screen_w, self.screen_h)]
+        self.obstacles: list[Obstacle] = []
+        self.add_obstacle()
+
+    def add_obstacle(self):
+        obstacle = Obstacle.make_random(self.screen_w, self.screen_h)
+        self.obstacles.append(obstacle)
+        
+    def remove_oldest_obstacle(self):
+        self.obstacles.pop(0)
 
     def scale_positions(self, scale_x, scale_y):
         self.bird_pos = (self.bird_pos[0] * scale_x, self.bird_pos[1] * scale_y)
-        self.bg_pos[0] = self.bg_pos[0] * scale_x
-        self.bg_pos[1] = self.bg_pos[1] * scale_x
-        self.bg_pos[2] = self.bg_pos[2] * scale_x
+        for i in range(len(self.bg_pos)): 
+            self.bg_pos[i] = self.bg_pos[i] * scale_x
 
     def run(self):
         self.running = True
@@ -199,8 +208,16 @@ class Game:
         # Aseta linnun x-y-koordinaatit self.bird_pos-muuttujaan
         self.bird_pos = (self.bird_pos[0], bird_y)
 
+        # Lisää uusi este, kun viimeisin esto on yli ruudun puolivälin
+        if self.obstacles[-1].position < -self.screen_w / 2:
+            self.add_obstacle()
+
+        # Poista vasemmanpuoleisin este, jos se on mennyt ruudun ulkopuolelle
+        if not self.obstacles[0].is_visible:
+            self.remove_oldest_obstacle()
+        
         for obstacle in self.obstacles:
-            obstacle.move(self.screen_w * 0.005)
+            obstacle.move(self.screen_w * 0.005)            
 
     def update_screen(self):
         # Täytä tausta vaaleansinisellä
