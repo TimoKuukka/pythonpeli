@@ -3,7 +3,7 @@ import pygame
 from text_render import render_centered_text_lines
 
 DEFAULT_COLOR = (160, 160, 0)
-DEFAULT_FONT_FILE = "fonts/SyneMono-Regular.ttf"
+DEFAULT_FONT_FILE = "font/SyneMono-Regular.ttf"
 DEFAULT_FONT_SIZE = 48
 
 
