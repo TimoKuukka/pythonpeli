@@ -13,11 +13,12 @@ class Obstacle:
 
     @classmethod
     def make_random(cls, screen_w, screen_h):
+        width = screen_w / 8
         hole_size = random.randint(int(screen_h * 0.25),
                                    int(screen_h * 0.75))
         h2 = random.randint(int(screen_h * 0.15), int(screen_h * 0.75))
         h1 = screen_h - h2 - hole_size
-        return cls(upper_height=h1, lower_height=h2, hole_size=hole_size, position=screen_w)
+        return cls(upper_height=h1, lower_height=h2, hole_size=hole_size, position=screen_w, width=width)
     
     def move(self, speed):
         self.position -= speed
