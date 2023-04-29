@@ -1,3 +1,4 @@
+import random
 
 import pygame
 
@@ -85,6 +86,7 @@ class Game:
         self.bird_frame = 0
         self.bird_lift = False
         self.obstacles: list[Obstacle] = []
+        self.next_obstacle_at = self.screen_w / 2
         self.add_obstacle()
 
     def add_obstacle(self):
@@ -248,8 +250,12 @@ class Game:
         self.bird_pos = (self.bird_pos[0], bird_y)
 
         # Lisää uusi este, kun viimeisin este on yli ruudun puolivälin
-        if self.obstacles[-1].position < self.screen_w / 2:
+        if self.obstacles[-1].position < self.next_obstacle_at:
             self.add_obstacle()
+            self.next_obstacle_at = random.randint(
+                int(self.screen_w * 0.35),
+                int(self.screen_w * 0.65),
+            )
 
         # Poista vasemmanpuoleisin este, kun se on mennyt ruudun ulkopuolelle
         if not self.obstacles[0].is_visible():
