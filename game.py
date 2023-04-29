@@ -279,6 +279,9 @@ class Game:
 
         # Piirrä taustakerrokset (3 kpl)
         for i in range(len(self.bg_imgs)):
+            # Menussa piirretään vain ensimmäinen taustakerros
+            if self.is_in_menu and i == 1:
+                break  # Kun ollaan menussa ja i=1, niin lopetetaan looppi
             # Ensin piirrä vasen tausta
             self.screen.blit(self.bg_imgs[i], (self.bg_pos[i], 0))
             # Jos vasen tausta ei riitä peittämään koko ruutua, niin...
