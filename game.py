@@ -95,7 +95,10 @@ class Game:
 
             # Päivitä näyttö
             self.update_screen()
-            
+
+            # Päivitä näytölle piirretyt asiat näkyviin
+            pygame.display.flip()
+
             # Odota niin kauan, että ruudun päivitysnopeus on 60fps
             self.clock.tick(60)
 
@@ -251,13 +254,6 @@ class Game:
             fps_text = f"{self.clock.get_fps():.1f} fps"
             fps_img = self.font16.render(fps_text, True, FPS_TEXT_COLOR)
             self.screen.blit(fps_img, (0, 0))
-
-        pygame.display.flip()
-
-
-
-
-
 
 if __name__ == "__main__":
     main()
