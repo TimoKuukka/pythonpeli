@@ -178,11 +178,13 @@ class Game:
 
     def play_menu_music(self):
         pygame.mixer.music.load("music/music_menu_chill.oga")
-        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.4)
+        pygame.mixer.music.play(loops=-1)
 
     def play_game_music(self):
         pygame.mixer.music.load("music/music_run_game_2.oga")
-        pygame.mixer.music.play(-1)           
+        pygame.mixer.music.set_volume(0.4)
+        pygame.mixer.music.play(loops=-1)           
 
     def toggle_fullscreen(self):
         old_w = self.screen_w
