@@ -4,7 +4,7 @@ from text_render import render_centered_text_lines
 
 DEFAULT_COLOR = (0, 0, 128)
 DEFAULT_SELECT_COLOR = (90, 90, 255)
-DEFAULT_FONT_FILE = "fonts/SyneMono-Regular.ttf"
+DEFAULT_FONT_FILE = "font/SyneMono-Regular.ttf"
 DEFAULT_FONT_SIZE = 48
 
 
